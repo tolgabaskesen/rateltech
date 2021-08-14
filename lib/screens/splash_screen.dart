@@ -1,0 +1,92 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rateltech/notifiers/login_notifier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class SplashScreen extends StatefulWidget {
+  SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  late int _start;
+  late Timer timer;
+  String route = "/login_screen";
+
+  @override
+  void initState() {
+    ////Uygulama yüklendiği anda timer başlatılarak splash screen geçişi yapılıyor
+
+    startTimer();
+    super.initState();
+  }
+
+  void startTimer() {
+    ////Splash Screen için zamanlayıcı
+    _start = 3;
+    const oneSec = const Duration(seconds: 1);
+    timer = new Timer.periodic(
+      oneSec,
+      (Timer timer) => setState(() {
+        if (_start < 1) {
+          timer.cancel();
+          Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
+        } else {
+          _start = _start - 1;
+        }
+      }),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    @override
+    void initState() {
+      WidgetsBinding.instance!.addPostFrameCallback((_) async {
+        SharedPreferences user = await SharedPreferences.getInstance();
+        if (user.getString("user") != "" || user.getString("user") != null) {
+          setState(() {
+            route = "/home_screen";
+          });
+        }
+      });
+
+      super.initState();
+    }
+
+    Future<bool> isLogin() async {
+      SharedPreferences user = await SharedPreferences.getInstance();
+      if (user.getString("user") != "" || user.getString("user") != null) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    return Scaffold(
+      body: Container(
+        color: Colors.white,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset("assets/images/ratel.png"),
+            SizedBox(
+              height: size.height * 0.1,
+            ),
+            CircularProgressIndicator(
+              color: Colors.black,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
