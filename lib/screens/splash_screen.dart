@@ -40,7 +40,11 @@ class _SplashScreenState extends State<SplashScreen> {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       var state = Provider.of<LoginNotifier>(context, listen: false);
       SharedPreferences user = await SharedPreferences.getInstance();
-      if (user.getString("user") != "" || user.getString("user") != null) {
+      if (user.getString("user") == "" || user.getString("user") == null) {
+        setState(() {
+          route = "/login_screen";
+        });
+      } else {
         setState(() {
           state.setLoginUserFirst(user.getString("user")!);
           route = "/home_screen";
