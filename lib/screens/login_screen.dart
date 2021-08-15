@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(18.0),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           String validate = Utils.validate(_phoneValue);
                           if (validate.length > 0) {
                             setState(() {

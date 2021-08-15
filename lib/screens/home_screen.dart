@@ -186,6 +186,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+
+                      onTap: () {
+                        Navigator.pushNamed(context, "/test_screen");
+                      },
                     ),
                     GestureDetector(
                       ////RANDEVULARIM  BUTONU

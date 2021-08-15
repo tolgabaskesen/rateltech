@@ -17,14 +17,6 @@ class _SplashScreenState extends State<SplashScreen> {
   late Timer timer;
   String route = "/login_screen";
 
-  @override
-  void initState() {
-    ////Uygulama yüklendiği anda timer başlatılarak splash screen geçişi yapılıyor
-
-    startTimer();
-    super.initState();
-  }
-
   void startTimer() {
     ////Splash Screen için zamanlayıcı
     _start = 3;
@@ -43,31 +35,35 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    @override
-    void initState() {
-      WidgetsBinding.instance!.addPostFrameCallback((_) async {
-        SharedPreferences user = await SharedPreferences.getInstance();
-        if (user.getString("user") != "" || user.getString("user") != null) {
-          setState(() {
-            route = "/home_screen";
-          });
-        }
-      });
-
-      super.initState();
-    }
-
-    Future<bool> isLogin() async {
+  void initState() {
+    ////Sisteme daha önceden giriş yapılıp, yapılmadığı kontrol ediliyor
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      var state = Provider.of<LoginNotifier>(context, listen: false);
       SharedPreferences user = await SharedPreferences.getInstance();
       if (user.getString("user") != "" || user.getString("user") != null) {
-        return true;
-      } else {
-        return false;
+        setState(() {
+          state.setLoginUserFirst(user.getString("user")!);
+          route = "/home_screen";
+        });
       }
+    });
+    ////Uygulama yüklendiği anda timer başlatılarak splash screen geçişi yapılıyor
+    startTimer();
+    super.initState();
+  }
+
+  Future<bool> isLogin() async {
+    SharedPreferences user = await SharedPreferences.getInstance();
+    if (user.getString("user") != "" || user.getString("user") != null) {
+      return true;
+    } else {
+      return false;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Container(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rateltech/notifiers/login_notifier.dart';
+import 'package:rateltech/notifiers/test_notifier.dart';
 import 'package:rateltech/screens/home_screen.dart';
 import 'package:rateltech/screens/login_screen.dart';
 import 'package:rateltech/screens/randevu_screen.dart';
@@ -19,6 +20,9 @@ Future<void> main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (context) => LoginNotifier(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => TestNotifier(),
     ),
   ], child: MyApp()));
 }
