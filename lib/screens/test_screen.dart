@@ -10,6 +10,7 @@ import 'package:rateltech/constants/color.dart';
 import 'package:rateltech/models/soru_cevap.dart';
 import 'package:rateltech/notifiers/login_notifier.dart';
 import 'package:rateltech/notifiers/test_notifier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TestScreen extends StatefulWidget {
   const TestScreen({Key? key}) : super(key: key);
@@ -28,9 +29,18 @@ class _TestScreenState extends State<TestScreen> {
           .loadString("assets/json/test.json");
       setState(() {
         _soruCevap = soruCevapFromJson(data);
+        istatistik();
       });
     });
     super.initState();
+  }
+
+  void istatistik() async {
+    SharedPreferences user = await SharedPreferences.getInstance();
+    var loginState = Provider.of<LoginNotifier>(context, listen: false);
+    var testState = Provider.of<TestNotifier>(context, listen: false);
+    testState.setCorrectPoint(user.getInt(loginState.LoginUser + "correct")!);
+    testState.setFalsePoint(user.getInt(loginState.LoginUser + "false")!);
   }
 
   Color? renk1 = Colors.white;
@@ -62,12 +72,41 @@ class _TestScreenState extends State<TestScreen> {
     }
   }
 
+  void yeniSoruTimer() {
+    ////Yeni soruya geçilmesi için zamanlayıcı
+    _start = 2;
+    const oneSec = const Duration(seconds: 1);
+    timer = new Timer.periodic(
+      oneSec,
+      (Timer timer) => setState(() {
+        if (_start < 1) {
+          timer.cancel();
+          setState(() {
+            if (soruNo < 2) {
+              soruNo++;
+            } else {
+              soruNo = 0;
+            }
+            renk1 = Colors.white;
+            renk2 = Colors.white;
+            renk3 = Colors.white;
+            renk4 = Colors.white;
+            isAnswered = false;
+          });
+        } else {
+          _start = _start - 1;
+        }
+      }),
+    );
+  }
+
   void dogruCevapBelirle(int cevapNo) {
     var testState = Provider.of<TestNotifier>(context, listen: false);
     var loginState = Provider.of<LoginNotifier>(context, listen: false);
     setState(() {
       if (_soruCevap[soruNo].dogrucevap == cevapNo.toString()) {
         testState.correctAnswer(loginState.LoginUser);
+        yeniSoruTimer();
         switch (cevapNo) {
           case 0:
             renk1 = Colors.green[700];
@@ -84,34 +123,41 @@ class _TestScreenState extends State<TestScreen> {
         }
       } else {
         testState.falseAnswer(loginState.LoginUser);
+        dogruCevapIsaretle();
+        yeniSoruTimer();
         switch (cevapNo) {
           case 0:
             renk1 = Colors.red[700];
-            return null;
+            break;
           case 1:
             renk2 = Colors.red[700];
-            return null;
+            break;
           case 2:
             renk3 = Colors.red[700];
-            return null;
+            break;
           case 3:
             renk4 = Colors.red[700];
-            return null;
+            break;
         }
-        switch (_soruCevap[soruNo].dogrucevap) {
-          case 0:
-            renk1 = Colors.green[700];
-            return null;
-          case 1:
-            renk2 = Colors.green[700];
-            return null;
-          case 2:
-            renk3 = Colors.green[700];
-            return null;
-          case 3:
-            renk4 = Colors.green[700];
-            return null;
-        }
+      }
+    });
+  }
+
+  void dogruCevapIsaretle() {
+    setState(() {
+      switch (int.parse(_soruCevap[soruNo].dogrucevap)) {
+        case 0:
+          renk1 = Colors.green[700];
+          return null;
+        case 1:
+          renk2 = Colors.green[700];
+          return null;
+        case 2:
+          renk3 = Colors.green[700];
+          return null;
+        case 3:
+          renk4 = Colors.green[700];
+          return null;
       }
     });
   }
@@ -279,7 +325,7 @@ class _TestScreenState extends State<TestScreen> {
                         flex: 7,
                         child: SingleChildScrollView(
                           child: Container(
-                            height: size.height * 0.7,
+                            height: size.height * 0.4,
                             child: Column(
                               children: [
                                 soruModel(_soruCevap[soruNo].soru),
@@ -311,6 +357,11 @@ class _TestScreenState extends State<TestScreen> {
                                             renk4, 3),
                                       ],
                                     ),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          print(testState.userFalsePoint);
+                                        },
+                                        child: Text("bas"))
                                   ],
                                 ),
                               ],

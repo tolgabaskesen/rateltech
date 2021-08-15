@@ -7,10 +7,10 @@ class TestNotifier with ChangeNotifier {
   // ignore: non_constant_identifier_names
   String get LoginUser => _LoginUser;
 
-  int _userCorrectPoint = 0;
-  int get userCorrectPoint => _userCorrectPoint;
-  int _userFalsePoint = 0;
-  int get userFalsePoint => _userFalsePoint;
+  int? _userCorrectPoint;
+  int? get userCorrectPoint => _userCorrectPoint;
+  int? _userFalsePoint;
+  int? get userFalsePoint => _userFalsePoint;
   setCorrectPoint(int point) async {
     _userCorrectPoint = point;
     print(_userCorrectPoint);
