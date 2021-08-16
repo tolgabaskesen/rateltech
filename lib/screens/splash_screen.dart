@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rateltech/notifiers/login_notifier.dart';
-import 'package:rateltech/notifiers/test_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -36,11 +34,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     ////Sisteme daha önceden giriş yapılıp, yapılmadığı kontrol ediliyor
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       var state = Provider.of<LoginNotifier>(context, listen: false);
-      var state2 = Provider.of<TestNotifier>(context, listen: false);
       SharedPreferences user = await SharedPreferences.getInstance();
       if (user.getString("user") == "" || user.getString("user") == null) {
         setState(() {

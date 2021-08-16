@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final soruCevap = soruCevapFromJson(jsonString);
-
 import 'dart:convert';
 
 List<SoruCevap> soruCevapFromJson(String str) =>

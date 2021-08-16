@@ -31,6 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Container(
           height: size.height,
           width: size.width,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.3, 0.9],
+              colors: [
+                Colors.white,
+                primaryRed,
+              ],
+            ),
+          ),
           padding: EdgeInsets.fromLTRB(
               10, size.height * 0.08, 10, size.height * 0.08),
           child: Column(
@@ -88,10 +99,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (context, state, widget) {
                         var state =
                             Provider.of<LoginNotifier>(context, listen: false);
-                        return AutoSizeText(state.LoginUser,
-                            style: TextStyle(
+                        return AutoSizeText(
+                          state.LoginUser,
+                          style: GoogleFonts.merriweather(
+                            textStyle: TextStyle(
                               fontWeight: FontWeight.bold,
-                            ));
+                              color: Colors.black,
+                            ),
+                          ),
+                        );
                       }),
                     ),
                   )),
@@ -106,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: size.height * 0.15,
                         width: size.width * 0.9,
                         decoration: BoxDecoration(
-                          border: Border.all(color: primaryRed),
+                          border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                           gradient: LinearGradient(
                             begin: Alignment.centerLeft,
@@ -151,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: size.height * 0.15,
                         width: size.width * 0.9,
                         decoration: BoxDecoration(
-                          border: Border.all(color: primaryRed),
+                          border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                           gradient: LinearGradient(
                             begin: Alignment.centerLeft,
@@ -197,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: size.height * 0.15,
                         width: size.width * 0.9,
                         decoration: BoxDecoration(
-                          border: Border.all(color: primaryRed),
+                          border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                           gradient: LinearGradient(
                             begin: Alignment.centerLeft,
@@ -233,6 +249,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.pushNamed(context, "/randevu_screen");
+                      },
                     ),
                   ],
                 ),

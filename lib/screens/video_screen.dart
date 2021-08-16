@@ -1,6 +1,7 @@
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:rateltech/constants/color.dart';
 import 'package:rateltech/screens/player_screen.dart';
 
@@ -135,13 +136,13 @@ class _VideoScreenState extends State<VideoScreen> {
                   width: size.width * 0.5,
                   child: AutoSizeText(
                     title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: size.width * 0.05,
-                      color: Colors.black,
+                    style: GoogleFonts.merriweather(
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: size.width * 0.05,
+                        color: Colors.black,
+                      ),
                     ),
-                    maxLines: 2,
-                    maxFontSize: 20,
                   ),
                 )
               ],
@@ -150,9 +151,9 @@ class _VideoScreenState extends State<VideoScreen> {
         ),
         onTap: () {
           Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => new PlayerScreen(id: id)));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => new PlayerScreen(id: id)));
         },
       ),
     );

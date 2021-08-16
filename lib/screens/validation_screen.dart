@@ -49,7 +49,7 @@ class _ValidationScreenState extends State<ValidationScreen> {
                     flex: 4,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.blue[700],
+                        color: primaryRed,
                         borderRadius: BorderRadius.vertical(
                             bottom: Radius.elliptical(size.width, 100.0)),
                       ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+// ignore: unused_import
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:auto_size_text/auto_size_text.dart';
@@ -51,6 +52,14 @@ class _TestScreenState extends State<TestScreen> {
   Timer? timer;
   bool isAnswered = false;
   int soruNo = 0;
+
+  @override
+  void dispose() {
+    if (timer != null) {
+      timer!.cancel();
+    }
+    super.dispose();
+  }
 
   void startTimer(int cevapNo) {
     if (isAnswered == false) {
@@ -201,6 +210,17 @@ class _TestScreenState extends State<TestScreen> {
                 child: Container(
                   height: size.height,
                   width: size.width,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      stops: [0.3, 0.9],
+                      colors: [
+                        Colors.white,
+                        primaryRed,
+                      ],
+                    ),
+                  ),
                   padding: EdgeInsets.fromLTRB(
                       10, size.height * 0.08, 10, size.height * 0.08),
                   child: Column(
@@ -248,14 +268,18 @@ class _TestScreenState extends State<TestScreen> {
                               height: size.height * 0.05,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
+                                color: Colors.white,
                                 border: Border.all(color: primaryRed),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)),
                               ),
                               child: AutoSizeText(
                                 loginState.LoginUser,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                                style: GoogleFonts.merriweather(
+                                  textStyle: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             )),
@@ -271,6 +295,7 @@ class _TestScreenState extends State<TestScreen> {
                               height: size.height * 0.05,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
+                                color: Colors.white,
                                 border: Border.all(color: primaryRed),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)),
@@ -285,8 +310,11 @@ class _TestScreenState extends State<TestScreen> {
                                   ),
                                   AutoSizeText(
                                     testState.userCorrectPoint.toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
+                                    style: GoogleFonts.merriweather(
+                                      textStyle: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -297,6 +325,7 @@ class _TestScreenState extends State<TestScreen> {
                               height: size.height * 0.05,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
+                                color: Colors.white,
                                 border: Border.all(color: primaryRed),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)),
@@ -311,8 +340,11 @@ class _TestScreenState extends State<TestScreen> {
                                   ),
                                   AutoSizeText(
                                     testState.userFalsePoint.toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
+                                    style: GoogleFonts.merriweather(
+                                      textStyle: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -357,11 +389,6 @@ class _TestScreenState extends State<TestScreen> {
                                             renk4, 3),
                                       ],
                                     ),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          print(testState.userFalsePoint);
-                                        },
-                                        child: Text("bas"))
                                   ],
                                 ),
                               ],
@@ -386,14 +413,18 @@ class _TestScreenState extends State<TestScreen> {
         height: size.height * 0.05,
         alignment: Alignment.center,
         decoration: BoxDecoration(
+          color: Colors.white,
           border: Border.all(color: primaryRed),
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: AutoSizeText(
           soruText,
           maxLines: 2,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.merriweather(
+            textStyle: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
       ),
@@ -428,8 +459,11 @@ class _TestScreenState extends State<TestScreen> {
           child: AutoSizeText(
             cevapText,
             maxLines: 2,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.merriweather(
+              textStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
           ),
         ),
