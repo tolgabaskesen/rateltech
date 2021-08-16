@@ -1,26 +1,28 @@
 [
     {
-        "tarih": "25-08-2021",
+        "tarih": "17-08-2021",
         "saat": "10:00",
         "poliklinik": "Genel Cerrahi",
         "blok": "B1-Blok",
         "doktoradi": "Mehmet Yılmaz",
-        "hastane": "Bursa Şehir Hastanesi"
+        "hastane" : "Bursa Şehir Hastanesi"
     },
     {
-        "tarih": "22-09-2021",
+        "tarih": "18-08-2021",
         "saat": "14:00",
         "poliklinik": "Kardiyoloji",
         "blok": "A3-Blok",
         "doktoradi": "Erkan Taş",
-        "hastane": "İzmir Şehir Hastanesi"
+        "hastane" : "İzmir Şehir Hastanesi"
+
     },
     {
-        "tarih": "30-11-2021",
+        "tarih": "19-08-2021",
         "saat": "16:00",
         "poliklinik": "Ortopedi",
         "blok": "C2-Blok",
         "doktoradi": "Ayşe Biricik",
-        "hastane": "Ankara Şehir Hastanesi"
+        "hastane" : "Ankara Şehir Hastanesi"
+
     }
 ]

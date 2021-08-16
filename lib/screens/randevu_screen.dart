@@ -1,19 +1,15 @@
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:rateltech/constants/color.dart';
-import 'package:rateltech/models/notification_model.dart';
 import 'package:rateltech/models/randevu_model.dart';
 import 'package:rateltech/notifiers/login_notifier.dart';
 import 'package:rateltech/notifiers/test_notifier.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:rateltech/screens/home_screen.dart';
-import 'package:rxdart/subjects.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class RandevuScreen extends StatefulWidget {
   const RandevuScreen({Key? key}) : super(key: key);
@@ -24,16 +20,6 @@ class RandevuScreen extends StatefulWidget {
 
 class _RandevuScreenState extends State<RandevuScreen> {
   var _randevular;
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  // ignore: close_sinks
-  final BehaviorSubject<String?> selectNotificationSubject =
-      BehaviorSubject<String?>();
-  // ignore: close_sinks
-  final BehaviorSubject<ReceivedNotification>
-      // ignore: close_sinks
-      didReceiveLocalNotificationSubject =
-      BehaviorSubject<ReceivedNotification>();
 
   FlutterLocalNotificationsPlugin fltrNotification =
       new FlutterLocalNotificationsPlugin();
@@ -46,9 +32,7 @@ class _RandevuScreenState extends State<RandevuScreen> {
       setState(() {
         _randevular = randevuFromJson(data);
       });
-      _requestPermissions(); //// APPLE CİHAZLAR İÇİN YETKİ İSTEĞİ
-      _configureSelectNotificationSubject();
-      _configureDidReceiveLocalNotificationSubject();
+
       var androidInitilize = new AndroidInitializationSettings('app_icon');
       var iOSinitilize = new IOSInitializationSettings();
       var initilizationsSettings = new InitializationSettings(
@@ -56,6 +40,7 @@ class _RandevuScreenState extends State<RandevuScreen> {
       fltrNotification.initialize(initilizationsSettings,
           onSelectNotification: notificationSelected);
     });
+    randevuTarihKontrol();
     super.initState();
   }
 
@@ -63,110 +48,102 @@ class _RandevuScreenState extends State<RandevuScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: Text("Notification : $payload"),
+        content: Text(
+          "Randevunuz var!!",
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
 
-  Future<void> _zonedScheduleNotification() async {
-    final scheduledDate = tz.TZDateTime.from(DateTime.now(), tz.local);
+  void randevuTarihKontrol() async {
+    String data = await DefaultAssetBundle.of(context)
+        .loadString("assets/json/randevu.json");
+    setState(() {
+      _randevular = randevuFromJson(data);
+    });
+    ////RANDEVU GÜNÜ KONTROL ALGORİTMASI
+    if (_randevular != null) {
+      setState(() {
+        var now = DateTime.now();
+        var dateYear = now.year;
+        var dateMonth = now.month;
+        var dateDay = now.day;
+        int diffYear = 0;
+        int diffMonth = 0;
+        int diffDay = 0;
+        for (int i = 0; i < 3; i++) {
+          var ranYear = int.parse(_randevular[i].tarih.substring(6, 10));
+          var ranMonth = int.parse(_randevular[i].tarih.substring(3, 5));
+          var ranDay = int.parse(_randevular[i].tarih.substring(0, 2));
+          if (ranYear >= dateYear) {
+            if (ranMonth >= dateMonth) {
+              if (ranDay > dateDay) {
+                diffYear = ranYear - dateYear;
+                diffMonth = ranMonth - dateMonth;
+                diffDay = ranDay - dateDay;
+                String newMonth = "";
+                if ((dateMonth + diffMonth) < 10) {
+                  newMonth = "0" + (dateMonth + diffMonth).toString();
+                }
+                String newDate = (dateYear + diffYear).toString() +
+                    "-" +
+                    newMonth +
+                    "-" +
+                    (dateDay + diffDay).toString();
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-        0,
-        'scheduled title',
-        'scheduled body',
-        scheduledDate.add(const Duration(seconds: 5)),
-        const NotificationDetails(
-            android: AndroidNotificationDetails('your channel id',
-                'your channel name', 'your channel description')),
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
+                DateTime tarih = DateTime.parse("$newDate 09:00:00.000000");
+                _bildirimGonder(tarih);
+                print(tarih);
+                return null;
+              }
+            }
+          }
+        }
+      });
+    } else {
+      randevuTarihKontrol();
+    }
   }
 
-  Future _showNotification() async {
+  Future _bildirimGonder(DateTime tarih) async {
+    ////Bildirim Fonksiyonu
     var androidDetails = new AndroidNotificationDetails(
-        "Channel ID", "Desi programmer", "This is my channel",
+        "RatelTech", "Randevu", "Bildirim",
+        importance: Importance.max);
+    var iOSDetails = new IOSNotificationDetails();
+    var generalNotificationDetails =
+        new NotificationDetails(android: androidDetails, iOS: iOSDetails);
+    var scheduledTime = tarih.add(Duration(seconds: 5));
+    print("Tarih ::: " + scheduledTime.toString());
+    // ignore: deprecated_member_use
+    fltrNotification.schedule(
+        1,
+        "Randevunuz var!!",
+        "Yaklaşan randevunuzu görüntülemek için lütfen dokunun",
+        scheduledTime,
+        generalNotificationDetails);
+  }
+
+  Future _denemeBildirim() async {
+    ////Bildirim deneyebilmek için deneme fonksiyonu
+    var androidDetails = new AndroidNotificationDetails(
+        "RatelTech", "Randevu", "Bildirim Denemesi",
         importance: Importance.max);
     var iOSDetails = new IOSNotificationDetails();
     var generalNotificationDetails =
         new NotificationDetails(android: androidDetails, iOS: iOSDetails);
 
-    await fltrNotification.show(
-        0, "Task", "You created a Task", generalNotificationDetails,
-        payload: "Task");
-  }
+    var scheduledTime = DateTime.now().add(Duration(seconds: 5));
+    // ignore: deprecated_member_use
 
-  void _configureDidReceiveLocalNotificationSubject() {
-    didReceiveLocalNotificationSubject.stream
-        .listen((ReceivedNotification receivedNotification) async {
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: receivedNotification.title != null
-              ? Text(receivedNotification.title!)
-              : null,
-          content: receivedNotification.body != null
-              ? Text(receivedNotification.body!)
-              : null,
-          actions: <Widget>[
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              onPressed: () async {
-                Navigator.of(context, rootNavigator: true).pop();
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => HomeScreen(),
-                  ),
-                );
-              },
-              child: const Text('Ok'),
-            )
-          ],
-        ),
-      );
-    });
+    fltrNotification.schedule(
+        1,
+        "Randevunuz var!!",
+        "Randevunuzu görüntülemek için lütfen dokunun",
+        scheduledTime,
+        generalNotificationDetails);
   }
-
-  void _configureSelectNotificationSubject() {
-    selectNotificationSubject.stream.listen((String? payload) async {
-      await Navigator.pushNamed(context, '/home_screen');
-    });
-  }
-
-  void _requestPermissions() {
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            MacOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-  }
-
-  /* void bildirim () async {
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-    0,
-    'scheduled title',
-    'scheduled body',
-    tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-    const NotificationDetails(
-        android: AndroidNotificationDetails('your channel id',
-            'your channel name', 'your channel description')),
-    androidAllowWhileIdle: true,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime);
-  } */
 
   String ayBelirle(String no) {
     switch (no) {
@@ -246,9 +223,7 @@ class _RandevuScreenState extends State<RandevuScreen> {
                                     EdgeInsets.only(left: size.width * 0.1),
                                 child: IconButton(
                                     onPressed: () {
-                                      _showNotification();
-                                      //_zonedScheduleNotification();
-                                      //Navigator.pop(context);
+                                      Navigator.pop(context);
                                     },
                                     icon: Icon(
                                       Icons.home,
@@ -281,6 +256,19 @@ class _RandevuScreenState extends State<RandevuScreen> {
                           ),
                         ),
                       ),
+                      Flexible(
+                        flex: 1,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: primaryRed,
+                            elevation: 10,
+                          ),
+                          onPressed: () {
+                            _denemeBildirim();
+                          },
+                          child: AutoSizeText("5 Saniyelik Deneme Bildirimi"),
+                        ),
+                      )
                     ],
                   ),
                 ),
